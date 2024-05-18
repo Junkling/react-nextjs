@@ -2,25 +2,19 @@ import React, { useCallback, useState , useMemo} from 'react';
 import {Button, Form , Input} from 'antd';
 import Link from 'next/link';
 import styled from 'styled-components';
+import useInput from '../hooks/useInput';
 
 
 const LoginForm = ({setIsLoggedIn}) => {
-    const [id, setId] = useState('');
-    const [password , setPassword] = useState('');
+    const [id, onChangeId] = useInput('');
+    const [password , onChangePassword] = useState('');
 
-    const onChangeId = useCallback((e)=>{
-        setId(e.target.value);
-    },[]);
-
-    const onChangePassword = useCallback((e)=>{
-        setPassword(e.target.value);
-    },[]);
     const onSubmitForm = useCallback(() => {
         console.log(id, password);
         setIsLoggedIn(true);
     }, [id, password])
 
-const FromWapper = styled(Form)`
+const FormWapper = styled(Form)`
     padding: 10px;
 `;
     
@@ -30,7 +24,7 @@ margin-top: 10px;
 `;
 const styleMemo = useMemo(() => ({ marginTop: 10 }), []);
     return (
-        <FromWapper onFinish={onSubmitForm}>
+        <FormWapper onFinish={onSubmitForm}>
             <div>
                 <label htmlFor='user-id'>로그인 아이디</label>
                 <br/>
@@ -49,7 +43,7 @@ const styleMemo = useMemo(() => ({ marginTop: 10 }), []);
             <div>
             
             </div>
-        </FromWapper>
+        </FormWapper>
     );
 };
 
