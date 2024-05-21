@@ -3,15 +3,18 @@ import {Button, Form , Input} from 'antd';
 import Link from 'next/link';
 import styled from 'styled-components';
 import useInput from '../hooks/useInput';
+import { useDispatch } from 'react-redux';
+import {loginAction} from '../reducers/user'
 
 
-const LoginForm = ({setIsLoggedIn}) => {
+const LoginForm = () => {
+    const dispatch = useDispatch();
     const [id, onChangeId] = useInput('');
-    const [password , onChangePassword] = useState('');
+    const [password , onChangePassword] = useInput('');
 
     const onSubmitForm = useCallback(() => {
         console.log(id, password);
-        setIsLoggedIn(true);
+        dispatch(loginAction({id, password}));
     }, [id, password])
 
 const FormWapper = styled(Form)`
@@ -31,9 +34,9 @@ const styleMemo = useMemo(() => ({ marginTop: 10 }), []);
                 <Input name='user-id' value={id} onChange={onChangeId} required/>
             </div>
             <div>
-                <label htmlFor='user-password'>비밀번호</label>
+                <label htmlFor='password'>비밀번호</label>
                 <br/>
-                <Input name='user-password' type='password' value={password} onChange={onChangePassword} required/>
+                <Input name='password' type='password' value={password} onChange={onChangePassword} required/>
             </div>
             {/* <ButtonWapper style={styleMemo}> */}
             <ButtonWapper>
