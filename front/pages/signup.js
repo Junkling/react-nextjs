@@ -4,13 +4,18 @@ import Head from 'next/head'
 import styled from 'styled-components';
 import {Form ,Input, Checkbox, Button} from 'antd';
 import useInput from '../hooks/useInput';
+import { SIGN_UP_REQUEST } from '../reducers/action';
+import { useDispatch, useSelector } from 'react-redux';
 
 const ErrorMessage = styled.div`
     color:red;
 `;
 
 const signup = () => {
-    const [id, onChangeId] = useInput('');
+    const dispatch = useDispatch();
+    const { isSigningUp } = useSelector((state)=> state.user);
+
+    const [email, onChangeEmail] = useInput('');
     const [nickname , onChangeNickname] = useInput('');
     
     const [password , onChangePassword] = useInput('');
@@ -35,8 +40,12 @@ const signup = () => {
         if(!term){
             return setTermError(ture);
         }
-        console.log(id, nickname , term)
-    },[password, passwordCheck, term]);
+        console.log(email, nickname , term)
+        dispatch({
+            type: SIGN_UP_REQUEST,
+            data: { email, password, nickname },
+        })
+    },[email,password, passwordCheck, term]);
     return (
         <AppLayout>
         <Head>
@@ -44,9 +53,9 @@ const signup = () => {
         </Head>
             <Form onFinish={onSubmit}>
                 <div>
-                    <label htmlFor='user-id'> 아이디 </label>
+                    <label htmlFor='user-email'> 아이디 </label>
                     <br/>
-                    <Input name="user-id" value={id} required onChange={onChangeId}/>
+                    <Input name="user-email" type='email' value={email} required onChange={onChangeEmail}/>
                 </div>
                 <div>
                     <label htmlFor='user-password'> 비밀번호 </label>
@@ -69,7 +78,7 @@ const signup = () => {
                     {termError && <ErrorMessage>약관에 동의하여야 합니다.</ErrorMessage>}
                 </div>
                 <div style={{marginTop:10}}>
-                    <Button type="primary" htmlType="submit">가입하기</Button> 
+                    <Button type="primary" htmlType="submit" loading={isSigningUp}>가입하기</Button> 
                 </div>
             </Form>
         </AppLayout>

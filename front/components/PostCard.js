@@ -5,6 +5,7 @@ import { EllipsisOutlined, HeartOutlined, MessageOutlined, RetweetOutlined , Hea
 import { useSelector } from 'react-redux';
 import PostImages from './PostImages';
 import CommentForm from './CommentForm';
+import PostCardContent from './PostCardContent';
 
 const PostCard = ({post}) => {
     const [liked, setLiked] = useState(false);
@@ -47,7 +48,7 @@ const PostCard = ({post}) => {
             <Card.Meta 
             avatar={<Avatar>{post.User.nickname}</Avatar>}
             title={post.title}
-            description={post.content}
+            description={<PostCardContent postData={post.content} />}
             />
            </Card>
            {commentFormOpend && (
@@ -75,7 +76,7 @@ const PostCard = ({post}) => {
     );
 };
 
-PostCard.PropTypes = {
+PostCard.propTypes = {
     post: PropTypes.shape({
         id: PropTypes.number,
         User: PropTypes.object,
