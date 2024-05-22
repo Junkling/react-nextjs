@@ -7,11 +7,11 @@ export const initialState = {
             nickname: '준혁',
         },
         title: '제목1',
-        content: '내용1',
+        content: '#첫번째 게시글 #해시태그 #사진',
         Image:[
-            {src: 'C:\Users\ddoly\Downloads\김지원.jpg'},
-            {src: 'C:\Users\ddoly\Downloads\기본 이미지.jpg'},
-            {src: 'C:\Users\ddoly\Downloads\프로필 2.png'},
+            {src: 'https://search.pstatic.net/common/?src=http%3A%2F%2Fblogfiles.naver.net%2FMjAyNDA1MDRfMTAx%2FMDAxNzE0ODAwMDUzMDU3.LFN6-TDpKQtfA98_h66LEwjZIjC5sJmuwTLAIt4YVXMg.RJW1zevKKKT7-rkTDCr0NQ5b_aMd367fpMj2VUan_uAg.JPEG%2F%25B1%25E8%25C1%25F6%25BF%25F8_%25C6%25D2%25B9%25CC%25C6%25C35.jpg&type=sc960_832'},
+            {src: 'https://search.pstatic.net/common/?src=http%3A%2F%2Fblogfiles.naver.net%2F20150807_176%2Fe2voo_1438935101901YtpDh_PNG%2F%25B9%25AB%25C1%25A6-1.png&type=sc960_832'},
+            {src: 'https://search.pstatic.net/common/?src=http%3A%2F%2Fblogfiles.naver.net%2F20150122_297%2Fzikil337_1421903875708eed71_PNG%2F20150115_130309.png&type=sc960_832'},
         ],
         Comments: [{
             User: {
