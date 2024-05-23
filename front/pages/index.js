@@ -6,7 +6,7 @@ import PostForm from "../components/PostForm";
 import PostCard from "../components/PostCard";
 
 const Home = () => {
-    const { isLoggedIn } = useSelector((state)=> state.user)
+    const { user } = useSelector((state)=> state.user)
     const { mainPosts } = useSelector((state)=> state.post)
     return (
         <>
@@ -14,7 +14,7 @@ const Home = () => {
             <title>메인페이지 | NodeBird</title>
         </Head>
         <AppLayout>
-            {isLoggedIn && <PostForm />}
+            {user && <PostForm />}
             {mainPosts.map((post) => <PostCard key={post.id} post={post}/>)}
         </AppLayout>
         </>

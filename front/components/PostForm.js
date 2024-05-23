@@ -7,7 +7,7 @@ import useInput from '../hooks/useInput';
 const PostForm = () => {
     const { imagePath, postAdded } = useSelector((state)=> state.post);
     const dispatch = useDispatch();
-    const [text, , onChangeText, setText] = useInput('');
+    const [text, onChangeText, setText] = useInput('');
     
     useEffect(()=>{
         if(postAdded){
