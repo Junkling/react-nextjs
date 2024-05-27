@@ -1,5 +1,5 @@
 import produce from "immer";
-import { ADD_POST_TO_ME, CHANGE_NICKNAME_FAILURE, CHANGE_NICKNAME_REQUEST, CHANGE_NICKNAME_SUCCESS, LOG_IN_FAILURE, LOG_IN_REQUEST, LOG_IN_SUCCESS, LOG_OUT_FAILURE, LOG_OUT_REQUEST, LOG_OUT_SUCCESS, REMOVE_POST_OF_ME, SIGN_UP_FAILURE, SIGN_UP_REQUEST, SIGN_UP_SUCCESS } from "./action";
+import { ADD_POST_TO_ME, CHANGE_NICKNAME_FAILURE, CHANGE_NICKNAME_REQUEST, CHANGE_NICKNAME_SUCCESS, FOLLOW_FAILURE, FOLLOW_REQUEST, FOLLOW_SUCCESS, LOG_IN_FAILURE, LOG_IN_REQUEST, LOG_IN_SUCCESS, LOG_OUT_FAILURE, LOG_OUT_REQUEST, LOG_OUT_SUCCESS, REMOVE_POST_OF_ME, SIGN_UP_FAILURE, SIGN_UP_REQUEST, SIGN_UP_SUCCESS, UNFOLLOW_FAILURE, UNFOLLOW_REQUEST, UNFOLLOW_SUCCESS } from "./action";
 
 export const initialState = {
     isLoggingIn: false,
@@ -17,6 +17,14 @@ export const initialState = {
     isSigningOut: false,
     isSignedOut: false,
     signOutError: null,
+
+    followLoading: false,
+    followFinish: false,
+    followError: null,
+
+    unfollowLoading: false,
+    unfollowFinish: false,
+    unfollowError: null,
     
     isChangingNickname : false,
     isChangedNickname : false,
@@ -121,6 +129,36 @@ const reducer = (state = initialState, action)=>{
                     draft.isLoggingIn= false;
                     draft.isLoggedIn= false;
                     draft.loginError= action.error;
+                    break;
+            case FOLLOW_REQUEST:
+                    draft.followLoading= true;
+                    draft.followFinish= false;
+                    draft.followError=null;
+                    break;
+            case FOLLOW_SUCCESS:
+                    draft.followLoading= false;
+                    draft.followFinish= true;
+                    draft.user.Followings.push({id : action.data});
+                    break;
+            case FOLLOW_FAILURE:
+                    draft.followLoading= false;
+                    draft.followFinish= false;
+                    draft.followError= action.error;
+                    break;
+            case UNFOLLOW_REQUEST:
+                    draft.unfollowLoading= true;
+                    draft.unfollowFinish= false;
+                    draft.unfollowError=null;
+                    break;
+            case UNFOLLOW_SUCCESS:
+                    draft.unfollowLoading= false;
+                    draft.unfollowFinish= true;
+                    draft.user.Followings = draft.user.Followings.filter((v)=> v.id !== action.data);
+                    break;
+            case UNFOLLOW_FAILURE:
+                    draft.unfollowLoading= false;
+                    draft.unfollowFinish= false;
+                    draft.unfollowError= action.error;
                     break;
             case LOG_OUT_REQUEST:
                     draft.isLoggingOut= true;

@@ -1,8 +1,33 @@
 import { all, fork, takeLatest, put, delay } from 'redux-saga/effects';
 import axios from 'axios';
-import { ADD_COMMENT_FAILURE, ADD_COMMENT_REQUEST, ADD_COMMENT_SUCCESS, ADD_POST_FAILURE, ADD_POST_REQUEST, ADD_POST_SUCCESS, ADD_POST_TO_ME, REMOVE_POST_FAILURE, REMOVE_POST_OF_ME, REMOVE_POST_REQUEST, REMOVE_POST_SUCCESS } from '../reducers/action';
+import { ADD_COMMENT_FAILURE, ADD_COMMENT_REQUEST, ADD_COMMENT_SUCCESS, ADD_POST_FAILURE, ADD_POST_REQUEST, ADD_POST_SUCCESS, ADD_POST_TO_ME, LOAD_POSTS_FAILURE, LOAD_POSTS_REQUEST, LOAD_POSTS_SUCCESS, REMOVE_POST_FAILURE, REMOVE_POST_OF_ME, REMOVE_POST_REQUEST, REMOVE_POST_SUCCESS } from '../reducers/action';
 import shortId from 'shortid';
+import { generageDummyPost } from '../reducers/post';
 
+function loadPostsApi(){
+    return axios.get(`/api/post`)
+}
+function* loadPosts(action) {
+    try {
+    // 그래서 여긴 call 호출
+    // const result = yield call(addPostApi)
+    yield delay(500);
+    console.log("LOAD_POSTS_SUCCESS 실행");
+    yield put ({
+        type: LOAD_POSTS_SUCCESS,
+        data: generageDummyPost(10),
+
+        // data: result.data
+    });
+    } catch (err){
+        console.log(err)
+        yield put({
+            type: LOAD_POSTS_FAILURE,
+            data: err.response.data
+            }
+        )
+    }
+}
 function addPostApi(){
     return axios.post(`/api/post`)
 }
@@ -78,6 +103,9 @@ function* addComment(action) {
         )
     }
 }
+function* watchLoadPosts(){
+    yield takeLatest(LOAD_POSTS_REQUEST, loadPosts);
+}
 function* watchAddPost(){
     yield takeLatest(ADD_POST_REQUEST, addPost);
 }
@@ -92,6 +120,7 @@ function* watchAddComment(){
 //fork를 실행하면 다음 작업을 바로 실행하지만 call을 하면 해당 요청의 응답을 기다린 다음에 다음 작업을 실행한다.
 export default function* postSaga() {
     yield all([
+        fork(watchLoadPosts),
         fork(watchAddPost),
         fork(watchRemovePost),
         fork(watchAddComment),

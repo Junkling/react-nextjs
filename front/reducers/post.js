@@ -1,6 +1,7 @@
-import { ADD_COMMENT_FAILURE, ADD_COMMENT_REQUEST, ADD_COMMENT_SUCCESS, ADD_POST_FAILURE, ADD_POST_REQUEST, ADD_POST_SUCCESS, REMOVE_POST_FAILURE, REMOVE_POST_REQUEST, REMOVE_POST_SUCCESS } from "./action";
+import { ADD_COMMENT_FAILURE, ADD_COMMENT_REQUEST, ADD_COMMENT_SUCCESS, ADD_POST_FAILURE, ADD_POST_REQUEST, ADD_POST_SUCCESS, LOAD_POSTS_FAILURE, LOAD_POSTS_REQUEST, LOAD_POSTS_SUCCESS, REMOVE_POST_FAILURE, REMOVE_POST_REQUEST, REMOVE_POST_SUCCESS } from "./action";
 import shortId from "shortid";
-import produce from 'immer'
+import produce from 'immer';
+import faker from "faker";
 
 export const initialState = {
     mainPosts: [{
@@ -41,6 +42,13 @@ export const initialState = {
         }]
     }],
     imagePath:[],
+
+    hasNextPosts: true,
+
+    postLoading: false,
+    postLoaded: false,
+    postLoadError: null,
+
     postAdding: false,
     postAdded: false,
     postAddError: null,
@@ -53,6 +61,30 @@ export const initialState = {
     commentAdded: false,
     commentAddError: null,
 }
+export const generageDummyPost = (num) => Array(num).fill().map((v, i) => ({
+    id: shortId.generate(),
+    User: {
+        id: shortId.generate(),
+        nickname: faker.name.findName()
+    },
+    content: faker.lorem.paragraph(),
+    Image:[
+        {
+            src: 'https://search.pstatic.net/common/?src=http%3A%2F%2Fblogfiles.naver.net%2F20150122_297%2Fzikil337_1421903875708eed71_PNG%2F20150115_130309.png&type=sc960_832',
+        }
+    ],
+    Comments: [
+        {User: {
+            id: shortId.generate(),
+            nickname: faker.name.findName()
+        },
+        content: faker.lorem.sentence(),}
+    ],
+}));
+
+initialState.mainPosts = initialState.mainPosts.concat(
+    generageDummyPost(10)
+);
 
 export const addPost =(data) => {
     return{
@@ -89,34 +121,50 @@ const dummyComment = (data) => ({
 
 const reducer = (state = initialState, action) => produce(state, (draft)=>{
     switch (action.type){
+        case LOAD_POSTS_REQUEST:
+            draft.postLoading= true;
+            draft.postLoaded= false;
+            draft.postLoadError= null;
+            break;
+        case LOAD_POSTS_SUCCESS:
+            // draft.mainPosts.unshift(action.data);
+            draft.postLoading= false;
+            draft.postLoaded= true;
+            draft.mainPosts = draft.mainPosts.concat(action.data);
+            draft.hasNextPosts = draft.mainPosts.length < 50;
+            break
+        case LOAD_POSTS_FAILURE:
+            draft.postLoading= false;
+            draft.postLoadError= action.error;
+            break;
         case ADD_POST_REQUEST:
-                draft.postAdding= true;
-                draft.postAdded= false;
-                draft.postAddError= null;
-                break;
+            draft.postAdding= true;
+            draft.postAdded= false;
+            draft.postAddError= null;
+            break;
         case ADD_POST_SUCCESS:
-                draft.mainPosts.unshift(dummyPost(action.data));
-                draft.postAdding= false;
-                draft.postAdded= true;
-                break
+            draft.mainPosts.unshift(dummyPost(action.data));
+            draft.postAdding= false;
+            draft.postAdded= true;
+            break
         case ADD_POST_FAILURE:
-                draft.postAdding= false;
-                draft.postAddError= action.error;
-                break;
+            draft.postAdding= false;
+            draft.postAddError= action.error;
+            break;
         case REMOVE_POST_REQUEST:
-                draft.postRemoving= true;
-                draft.postRemoved= false;
-                draft.postRemoveError= null;
-                break;
+            draft.postRemoving= true;
+            draft.postRemoved= false;
+            draft.postRemoveError= null;
+            break;
         case REMOVE_POST_SUCCESS:
-                draft.mainPosts.unshift(draft.mainPosts.filter((i) => i.id !== action.data));
-                draft.postRemoving= false;
-                draft.postRemoved= true;
-                break;
+            draft.mainPosts.unshift(draft.mainPosts.filter((i) => i.id !== action.data));
+            draft.postRemoving= false;
+            draft.postRemoved= true;
+            break;
         case REMOVE_POST_FAILURE:
-                draft.postRemoving= false;
-                draft.postRemoveError= action.error
-                break;
+            draft.postRemoving= false;
+            draft.postRemoveError= action.error
+            break;
         case ADD_COMMENT_REQUEST:
             draft.commentAdding= true; 
             draft.commentAdded= false; 
