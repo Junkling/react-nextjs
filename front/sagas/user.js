@@ -1,4 +1,4 @@
-import { all, fork, /*take, takeEvery,*/ takeLatest, put,  delay } from 'redux-saga/effects';
+import { all, fork, /*take, takeEvery,*/ takeLatest, put,  delay , call} from 'redux-saga/effects';
 import axios from 'axios';
 import { 
     FOLLOW_FAILURE, 
@@ -65,36 +65,35 @@ function* unfollow(action) {
 }
 
 function loginApi(data){
-    return axios.post(`/api/login`, data)
+    return axios.post(`/user/login`, data)
 }
 function* login(action) {
     try {
         // 그래서 여긴 call 호출
-        // const result = yield call(loginApi, action.data)
-        console.log('saga login');
-        yield delay(500);
+        const result = yield call(loginApi, action.data);
+        // yield delay(500);
         yield put ({
             type: LOG_IN_SUCCESS,
-            data: action.data,
-            // data: result.data
+            // data: action.data,
+            data: result.data,
         });
     } catch (err){
         yield put({
             type: LOG_IN_FAILURE,
-            data: err.response.data
+            error: err.response.data
             }
         );
     }
 }
 
-function logoutApi(data){
-    return axios.post(`/api/logout`,data)
+function logoutApi(){
+    return axios.post(`/user/logout`)
 }
-function* logout(action) {
+function* logout() {
     try {
     // 그래서 여긴 call 호출
-    // const result = yield call(logoutApi, action.data)
-    yield delay(500);
+    yield call(logoutApi)
+    // yield delay(500);
     yield put ({
         type: LOG_OUT_SUCCESS,
         // data: action.data,
@@ -111,23 +110,24 @@ function* logout(action) {
 }
 
 function signUpApi(data){
-    return axios.post(`/api/signup`,data)
+    return axios.post(`/user`,data)
 }
 function* signUp(action) {
     try {
     // 그래서 여긴 call 호출
-    // const result = yield call(signUpApi, action.data)
-    yield delay(500);
+    const result = yield call(signUpApi, action.data)
+    console.log(result);
+    // yield delay(500);
     yield put ({
         type: SIGN_UP_SUCCESS,
         // data: action.data,
-        // data: result.data
+        data: result.data
     })
     }
     catch (err){
         yield put({
             type: SIGN_UP_FAILURE,
-            data: err.response.data
+            error: err.response.data
             }
         )
     }

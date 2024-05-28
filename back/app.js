@@ -18,7 +18,40 @@
 // servier.listen(3065, () => {console.log('서버 실행 중')})
 
 const express = require('express');
+const cors = require('cors');
+const session = require('express-session');
+const cookieParser = require('cookie-parser');
+const passport = require('passport');
+const dotenv = require('dotenv');
+
+const postRouter = require('./routes/post');
+const userRouter = require('./routes/user');
+const db = require('./models');
+const passportConfig = require('./passport');
+
+dotenv.config();
 const app = express();
+db.sequelize.sync().then(()=> {console.log('db 연결 성공')}).catch(console.error)
+passportConfig();
+//dispatcherSevlet 의 개념 (요청을 json 타입으로 매핑, 쿼리 스트링 <-> 객체 옵션)
+app.use(cors(
+    {
+        origin: '*',
+        credentials: false,
+        // origin: 'junhyuk.com'
+    }
+));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser(process.env.COOKIE_SECRET));
+app.use(session({
+    saveUninitialized: false,
+    resave: false,
+    secret: process.env.SESSION_SECRET,
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+
 app.get('/', (req, res) => {
     res.send('Hello express')
 });
@@ -37,12 +70,7 @@ app.get(`/api/post`, (req, res) => {
     //json 형식으로 응답
     res.json({ id : 100 , content: '게시글 단건 조회'})
 });
-app.post('/api/post', (req, res) => {
-    // res.json('작성 완료')
-    // or
-    res.json({ id : 200 , content: '생성된 게시글'})
-});
-app.delete('/api/post', (req, res) => {
-    res.json({ id : 100 , content: '게시글 삭제'})
-});
-app.listen(3065, () => {console.log('서버 실행 중')})
+
+app.use('/user',userRouter);
+app.use('/post',postRouter);
+app.listen(3065, () => {console.log('서버 실행 중!!')})

@@ -123,7 +123,9 @@ const reducer = (state = initialState, action)=>{
             case LOG_IN_SUCCESS:
                     draft.isLoggingIn= false;
                     draft.isLoggedIn= true;
-                    draft.user= dummyUser(action.data);
+                    // 백엔드 연결 전
+                    // draft.user= dummyUser(action.data);
+                    draft.user= action.data;
                     break;
             case LOG_IN_FAILURE:
                     draft.isLoggingIn= false;
