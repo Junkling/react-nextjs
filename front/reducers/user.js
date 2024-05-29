@@ -1,5 +1,28 @@
 import produce from "immer";
-import { ADD_POST_TO_ME, CHANGE_NICKNAME_FAILURE, CHANGE_NICKNAME_REQUEST, CHANGE_NICKNAME_SUCCESS, FOLLOW_FAILURE, FOLLOW_REQUEST, FOLLOW_SUCCESS, LOG_IN_FAILURE, LOG_IN_REQUEST, LOG_IN_SUCCESS, LOG_OUT_FAILURE, LOG_OUT_REQUEST, LOG_OUT_SUCCESS, REMOVE_POST_OF_ME, SIGN_UP_FAILURE, SIGN_UP_REQUEST, SIGN_UP_SUCCESS, UNFOLLOW_FAILURE, UNFOLLOW_REQUEST, UNFOLLOW_SUCCESS } from "./action";
+import { 
+    ADD_POST_TO_ME, 
+    CHANGE_NICKNAME_FAILURE, 
+    CHANGE_NICKNAME_REQUEST, 
+    CHANGE_NICKNAME_SUCCESS, 
+    FOLLOW_FAILURE, 
+    FOLLOW_REQUEST, 
+    FOLLOW_SUCCESS, 
+    GET_MY_INFO_FAILURE, 
+    GET_MY_INFO_REQUEST, 
+    GET_MY_INFO_SUCCESS, 
+    LOG_IN_FAILURE, 
+    LOG_IN_REQUEST, 
+    LOG_IN_SUCCESS, 
+    LOG_OUT_FAILURE, 
+    LOG_OUT_REQUEST, 
+    LOG_OUT_SUCCESS, 
+    REMOVE_POST_OF_ME, 
+    SIGN_UP_FAILURE, 
+    SIGN_UP_REQUEST, 
+    SIGN_UP_SUCCESS, 
+    UNFOLLOW_FAILURE, 
+    UNFOLLOW_REQUEST,
+    UNFOLLOW_SUCCESS } from "./action";
 
 export const initialState = {
     isLoggingIn: false,
@@ -18,6 +41,10 @@ export const initialState = {
     isSignedOut: false,
     signOutError: null,
 
+    isGettingInfo: false,
+    isGotInfo: false,
+    getInfoError: null,
+
     followLoading: false,
     followFinish: false,
     followError: null,
@@ -34,14 +61,14 @@ export const initialState = {
     signUpData:{},
     loginData:{},
 }
-const dummyUser = (data) => ({
-    ...data, 
-    nickname:'junkling',
-    id: 1,
-    Posts:[{id:1}],
-    Followings:[{nickname: '익명1'},{nickname: '익명2'},{nickname: '익명3'}],
-    Followers:[{nickname: '익명1'},{nickname: '익명2'},{nickname: '익명3'}],
-})
+// const dummyUser = (data) => ({
+//     ...data, 
+//     nickname:'junkling',
+//     id: 1,
+//     Posts:[{id:1}],
+//     Followings:[{nickname: '익명1'},{nickname: '익명2'},{nickname: '익명3'}],
+//     Followers:[{nickname: '익명1'},{nickname: '익명2'},{nickname: '익명3'}],
+// })
 export const loginAction = (data) => {
     return (dispatch, getState) => {
         const state = getState();
@@ -175,6 +202,21 @@ const reducer = (state = initialState, action)=>{
             case LOG_OUT_FAILURE:
                     draft.isLoggingOut= false;
                     draft.isLoggedOut= false;
+                    draft.logoutError= action.error;
+                    break;
+            case GET_MY_INFO_REQUEST:
+                    draft.isGettingInfo= true;
+                    draft.isGotInfo= false;
+                    draft.getInfoError= null;
+                    break;
+            case GET_MY_INFO_SUCCESS:
+                    draft.isGettingInfo= false;
+                    draft.isGotInfo= true;
+                    draft.user= action.data;
+                    break;
+            case GET_MY_INFO_FAILURE:
+                    draft.isGettingInfo= false;
+                    draft.isGotInfo= false;
                     draft.logoutError= action.error;
                     break;
             case SIGN_UP_REQUEST:

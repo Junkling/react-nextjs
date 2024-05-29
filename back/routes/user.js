@@ -4,6 +4,7 @@ const {User, Post} = require('../models');
 const passport = require('passport');
 const { where } = require('sequelize');
 const router = express.Router();
+const {isLoggedIn, isNotLoggedIn} = require('./middleware')
 
 // async , await을 통해 비동기 처리에서의 순차적으로 실행 시키게 한다.
 router.post('/', async (req, res, next) => {
@@ -29,7 +30,7 @@ router.post('/', async (req, res, next) => {
 });
 
 //미들웨어 확장 방식
-router.post('/login', (req, res, next) => {
+router.post('/login', isNotLoggedIn , (req, res, next) => {
     passport.authenticate('local',(err, user, info) => {
         if(err){
             console.error(err);
@@ -54,12 +55,15 @@ router.post('/login', (req, res, next) => {
                 include: [{
                     model: Post,
                     as: 'Posts',
+                    attributes: ['id'],
                 },{
                     model: User,
                     as: 'Followings',
+                    attributes: ['id'],
                 },{
                     model: User,
                     as: 'Followers',
+                    attributes: ['id'],
                 }]
             });
             return res.status(200).json(userResponse);
@@ -67,10 +71,42 @@ router.post('/login', (req, res, next) => {
     })(req, res, next)
 });
 
-router.post('/logout', (req, res) => {
+router.post('/logout', isLoggedIn, (req, res) => {
     req.logout(()=>{});
     req.session.destroy();
     res.send('ok');
+});
+
+router.get('/', async (req, res, next) => {
+    try{
+        if(req.user){
+            const userResponse = await User.findOne({
+                where:{ id: req.user.id },
+                attributes: {
+                    exclude: ['password']
+                },
+                include: [{
+                    model: Post,
+                    as: 'Posts',
+                    attributes: ['id'],
+                },{
+                    model: User,
+                    as: 'Followings',
+                    attributes: ['id'],
+                },{
+                    model: User,
+                    as: 'Followers',
+                    attributes: ['id'],
+                }]
+            });
+            return res.status(200).json(userResponse);
+        }else{
+            res.status(200).json(null);
+        }
+    }catch(err){
+        console.error(err);
+        next(err);
+    }
 });
 
 module.exports = router;

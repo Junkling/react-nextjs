@@ -33,7 +33,7 @@ const PostCard = ({post}) => {
     return (
         <div style={{marginBottom: 20 }}>
            <Card
-           cover={post.Image[0] && <PostImages images={post.Image} />}
+           cover={post.Images[0] && <PostImages images={post.Images} />}
            actions={[
             <RetweetOutlined key="retweet"/>,
             
@@ -93,10 +93,11 @@ PostCard.propTypes = {
     post: PropTypes.shape({
         id: PropTypes.number,
         User: PropTypes.object,
+        PostId: PropTypes.number,
         content: PropTypes.string,
         title: PropTypes.string,
-        createdAt: PropTypes.object,
-        Comment: PropTypes.arrayOf(PropTypes.object),
+        createdAt: PropTypes.string,
+        Comments: PropTypes.arrayOf(PropTypes.object),
         Image: PropTypes.arrayOf(PropTypes.object),
     }).isRequired,
 }

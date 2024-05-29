@@ -1,7 +1,7 @@
 import { ADD_COMMENT_FAILURE, ADD_COMMENT_REQUEST, ADD_COMMENT_SUCCESS, ADD_POST_FAILURE, ADD_POST_REQUEST, ADD_POST_SUCCESS, LOAD_POSTS_FAILURE, LOAD_POSTS_REQUEST, LOAD_POSTS_SUCCESS, REMOVE_POST_FAILURE, REMOVE_POST_REQUEST, REMOVE_POST_SUCCESS } from "./action";
 import shortId from "shortid";
 import produce from 'immer';
-import faker from "faker";
+// import faker from "faker";
 
 export const initialState = {
     mainPosts: [{
@@ -12,7 +12,7 @@ export const initialState = {
         },
         title: '제목1',
         content: '첫번째 게시글 #해시태그 #김지원 #기본프로필들',
-        Image:[
+        Images:[
             {
                 id: shortId.generate(),
                 src: 'https://search.pstatic.net/common/?src=http%3A%2F%2Fblogfiles.naver.net%2FMjAyNDA1MDRfMTAx%2FMDAxNzE0ODAwMDUzMDU3.LFN6-TDpKQtfA98_h66LEwjZIjC5sJmuwTLAIt4YVXMg.RJW1zevKKKT7-rkTDCr0NQ5b_aMd367fpMj2VUan_uAg.JPEG%2F%25B1%25E8%25C1%25F6%25BF%25F8_%25C6%25D2%25B9%25CC%25C6%25C35.jpg&type=sc960_832'
@@ -61,30 +61,37 @@ export const initialState = {
     commentAdded: false,
     commentAddError: null,
 }
-export const generageDummyPost = (num) => Array(num).fill().map((v, i) => ({
-    id: shortId.generate(),
-    User: {
-        id: shortId.generate(),
-        nickname: faker.name.findName()
-    },
-    content: faker.lorem.paragraph(),
-    Image:[
-        {
-            src: 'https://search.pstatic.net/common/?src=http%3A%2F%2Fblogfiles.naver.net%2F20150122_297%2Fzikil337_1421903875708eed71_PNG%2F20150115_130309.png&type=sc960_832',
-        }
-    ],
-    Comments: [
-        {User: {
-            id: shortId.generate(),
-            nickname: faker.name.findName()
-        },
-        content: faker.lorem.sentence(),}
-    ],
-}));
+// export const generageDummyPost = (num) => Array(num).fill().map((v, i) => ({
+//     id: shortId.generate(),
+//     User: {
+//         id: shortId.generate(),
+//         nickname: faker.name.findName()
+//     },
+//     content: faker.lorem.paragraph(),
+//     Image:[
+//         {
+//             src: 'https://search.pstatic.net/common/?src=http%3A%2F%2Fblogfiles.naver.net%2F20150122_297%2Fzikil337_1421903875708eed71_PNG%2F20150115_130309.png&type=sc960_832',
+//         }
+//     ],
+//     Comments: [
+//         {User: {
+//             id: shortId.generate(),
+//             nickname: faker.name.findName()
+//         },
+//         content: faker.lorem.sentence(),}
+//     ],
+// }));
 
-initialState.mainPosts = initialState.mainPosts.concat(
-    generageDummyPost(10)
-);
+// export const loadPosts =(data) => {
+//     return{
+//         type: LOAD_POSTS_REQUEST,
+//         data,
+//     }
+// }
+
+// initialState.mainPosts = initialState.mainPosts.concat(
+//     loadPosts()
+// );
 
 export const addPost =(data) => {
     return{
@@ -99,25 +106,25 @@ export const addComment =(data) => {
     }
 }
 
-const dummyPost = (data) => ({
-    id: data.id,
-    title: '준혁님의 게시글',
-    content: data.content,
-    User: {
-        id: 1,
-        nickname: '준혁',
-    },
-    Image: [],
-    Comments: [],
-})
-const dummyComment = (data) => ({
-    id: shortId.generate(),
-    User: {
-        id: 1,
-        nickname: '익명 사용자',
-    },
-    content: data
-})
+// const dummyPost = (data) => ({
+//     id: data.id,
+//     title: '준혁님의 게시글',
+//     content: data.content,
+//     User: {
+//         id: 1,
+//         nickname: '준혁',
+//     },
+//     Image: [],
+//     Comments: [],
+// })
+// const dummyComment = (data) => ({
+//     id: shortId.generate(),
+//     User: {
+//         id: 1,
+//         nickname: '익명 사용자',
+//     },
+//     content: data
+// })
 
 const reducer = (state = initialState, action) => produce(state, (draft)=>{
     switch (action.type){
@@ -143,7 +150,7 @@ const reducer = (state = initialState, action) => produce(state, (draft)=>{
             draft.postAddError= null;
             break;
         case ADD_POST_SUCCESS:
-            draft.mainPosts.unshift(dummyPost(action.data));
+            draft.mainPosts.unshift(action.data);
             draft.postAdding= false;
             draft.postAdded= true;
             break
@@ -171,8 +178,8 @@ const reducer = (state = initialState, action) => produce(state, (draft)=>{
             draft.commentAddError= null;
             break;
         case ADD_COMMENT_SUCCESS:{
-            const findPost = draft.mainPosts.find((i) => i.id === action.data.postId);
-            findPost.Comments.unshift(dummyComment(action.data.content));
+            const findPost = draft.mainPosts.find((i) => i.id === action.data.PostId);
+            findPost.Comments.unshift(action.data);
             draft.commentAdding= false;
             draft.commentAdded= true;
             break;

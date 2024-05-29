@@ -12,8 +12,8 @@ module.exports = (sequelize, DataTypes) => {
         db.Post.belongsTo(db.User);
         //리트윗
         db.Post.belongsTo(db.Post,{as: 'Retweet'});
-        db.Post.hasMany(db.Comment);
-        db.Post.hasMany(db.Image);
+        db.Post.hasMany(db.Comment,{as: 'Comments'});
+        db.Post.hasMany(db.Image,{as: 'Images'});
 
         db.Post.belongsToMany(db.Hashtag,{through: 'PostHashtag'});
         // 중간테이블을 직접 만들어서 더 의미 있게 쓸 수 있지만 예제에서 뺴겠음

@@ -4,6 +4,9 @@ import {
     FOLLOW_FAILURE, 
     FOLLOW_REQUEST, 
     FOLLOW_SUCCESS, 
+    GET_MY_INFO_FAILURE, 
+    GET_MY_INFO_REQUEST, 
+    GET_MY_INFO_SUCCESS, 
     LOG_IN_FAILURE, 
     LOG_IN_REQUEST, 
     LOG_IN_SUCCESS, 
@@ -116,7 +119,6 @@ function* signUp(action) {
     try {
     // 그래서 여긴 call 호출
     const result = yield call(signUpApi, action.data)
-    console.log(result);
     // yield delay(500);
     yield put ({
         type: SIGN_UP_SUCCESS,
@@ -127,6 +129,29 @@ function* signUp(action) {
     catch (err){
         yield put({
             type: SIGN_UP_FAILURE,
+            error: err.response.data
+            }
+        )
+    }
+}
+
+function getInfoApi(){
+    return axios.get(`/user`)
+}
+function* getInfo(action) {
+    try {
+    // 그래서 여긴 call 호출
+    const result = yield call(getInfoApi, action.data)
+    // yield delay(500);
+    yield put ({
+        type: GET_MY_INFO_SUCCESS,
+        // data: action.data,
+        data: result.data
+    })
+    }
+    catch (err){
+        yield put({
+            type: GET_MY_INFO_FAILURE,
             error: err.response.data
             }
         )
@@ -147,6 +172,9 @@ function* watchLogout(){
 function* watchSignUp(){
     yield takeLatest(SIGN_UP_REQUEST, signUp);
 }
+function* watchGetUserInfo(){
+    yield takeLatest(GET_MY_INFO_REQUEST, getInfo);
+}
 
 export default function* userSaga() {
     yield all([
@@ -155,5 +183,6 @@ export default function* userSaga() {
         fork(watchLogin),
         fork(watchLogout),
         fork(watchSignUp),
+        fork(watchGetUserInfo),
     ])
 }
