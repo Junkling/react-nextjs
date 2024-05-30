@@ -6,17 +6,25 @@ import { useDispatch, useSelector } from 'react-redux';
 import PostImages from './PostImages';
 import CommentForm from './CommentForm';
 import PostCardContent from './PostCardContent';
-import { REMOVE_POST_REQUEST } from '../reducers/action';
+import { LIKE_POST_REQUEST, REMOVE_POST_REQUEST, UNLIKE_POST_REQUEST } from '../reducers/action';
 import FollowButton from './FollowButton';
 
 const PostCard = ({post}) => {
     const dispatch = useDispatch();
     const {postRemoving} = useSelector((state) => state.post);
-    const [liked, setLiked] = useState(false);
     const [commentFormOpend, setCommentFormOpend] = useState(false);
-    const onToggleLike = useCallback(()=>{
-        setLiked((prev)=> !prev);
-    },[])
+    const onLike = useCallback(()=>{
+        dispatch({
+            type: LIKE_POST_REQUEST,
+            data: post.id,
+        });
+    },[]);
+    const onUnlike = useCallback(()=>{
+        dispatch({
+            type: UNLIKE_POST_REQUEST,
+            data: post.id,
+        });
+    },[]);
     const onToggleComment = useCallback(()=>{
         setCommentFormOpend((prev)=>!prev);
     },[])
@@ -30,6 +38,7 @@ const PostCard = ({post}) => {
 
     const {user} = useSelector((state)=> state.user)
     const id = user?.id;
+    const liked = post.Hearters.find((v) => v.id===id);
     return (
         <div style={{marginBottom: 20 }}>
            <Card
@@ -38,8 +47,8 @@ const PostCard = ({post}) => {
             <RetweetOutlined key="retweet"/>,
             
             liked 
-            ?<HeartTwoTone twoToneColor="#eb2f93" key="haert" onClick={onToggleLike} />
-            :<HeartOutlined key="haert" onClick={onToggleLike} />,
+            ?<HeartTwoTone twoToneColor="#eb2f93" key="haert" onClick={onUnlike} />
+            :<HeartOutlined key="haert" onClick={onLike} />,
             
             <MessageOutlined key="comment" onClick={onToggleComment} />,
             <Popover key="more" content={(
@@ -98,6 +107,7 @@ PostCard.propTypes = {
         title: PropTypes.string,
         createdAt: PropTypes.string,
         Comments: PropTypes.arrayOf(PropTypes.object),
+        Hearters: PropTypes.arrayOf(PropTypes.object),
         Image: PropTypes.arrayOf(PropTypes.object),
     }).isRequired,
 }
