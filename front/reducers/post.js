@@ -1,47 +1,10 @@
-import { ADD_COMMENT_FAILURE, ADD_COMMENT_REQUEST, ADD_COMMENT_SUCCESS, ADD_POST_FAILURE, ADD_POST_REQUEST, ADD_POST_SUCCESS, LIKE_POST_FAILURE, LIKE_POST_REQUEST, LIKE_POST_SUCCESS, LOAD_POSTS_FAILURE, LOAD_POSTS_REQUEST, LOAD_POSTS_SUCCESS, REMOVE_POST_FAILURE, REMOVE_POST_REQUEST, REMOVE_POST_SUCCESS, UNLIKE_POST_FAILURE, UNLIKE_POST_REQUEST, UNLIKE_POST_SUCCESS } from "./action";
+import { ADD_COMMENT_FAILURE, ADD_COMMENT_REQUEST, ADD_COMMENT_SUCCESS, ADD_POST_FAILURE, ADD_POST_REQUEST, ADD_POST_SUCCESS, LIKE_POST_FAILURE, LIKE_POST_REQUEST, LIKE_POST_SUCCESS, LOAD_POSTS_FAILURE, LOAD_POSTS_REQUEST, LOAD_POSTS_SUCCESS, REMOVE_IMAGES_REQUEST, REMOVE_IMAGES_SUCCESS, REMOVE_POST_FAILURE, REMOVE_POST_REQUEST, REMOVE_POST_SUCCESS, RETWEET_POST_FAILURE, RETWEET_POST_REQUEST, RETWEET_POST_SUCCESS, UNLIKE_POST_FAILURE, UNLIKE_POST_REQUEST, UNLIKE_POST_SUCCESS, UPLOAD_IMAGES_FAILURE, UPLOAD_IMAGES_REQUEST, UPLOAD_IMAGES_SUCCESS } from "./action";
 import shortId from "shortid";
 import produce from 'immer';
 // import faker from "faker";
 
 export const initialState = {
-    mainPosts: [{
-        id:1,
-        User: {
-            id: 1,
-            nickname: '준혁',
-        },
-        title: '제목1',
-        content: '첫번째 게시글 #해시태그 #김지원 #기본프로필들',
-        Images:[
-            {
-                id: shortId.generate(),
-                src: 'https://search.pstatic.net/common/?src=http%3A%2F%2Fblogfiles.naver.net%2FMjAyNDA1MDRfMTAx%2FMDAxNzE0ODAwMDUzMDU3.LFN6-TDpKQtfA98_h66LEwjZIjC5sJmuwTLAIt4YVXMg.RJW1zevKKKT7-rkTDCr0NQ5b_aMd367fpMj2VUan_uAg.JPEG%2F%25B1%25E8%25C1%25F6%25BF%25F8_%25C6%25D2%25B9%25CC%25C6%25C35.jpg&type=sc960_832'
-            },{
-                id: shortId.generate(),
-                src: 'https://search.pstatic.net/common/?src=http%3A%2F%2Fblogfiles.naver.net%2F20150807_176%2Fe2voo_1438935101901YtpDh_PNG%2F%25B9%25AB%25C1%25A6-1.png&type=sc960_832'
-            },{
-                id: shortId.generate(),
-                src: 'https://search.pstatic.net/common/?src=http%3A%2F%2Fblogfiles.naver.net%2F20150122_297%2Fzikil337_1421903875708eed71_PNG%2F20150115_130309.png&type=sc960_832'
-            },
-        ],
-        Comments: [{
-            id: shortId.generate(),
-            User: {
-                id: shortId.generate(),
-                nickname: '익명의 사자',
-            },
-            content: '너무 예뻐요'
-        },
-        {
-            id: shortId.generate(),
-            User: {
-                id: shortId.generate(),
-                nickname: '익명의 토끼',
-            },
-            content: '추천하고 갑니다.'
-        }],
-        Hearters:[]
-    }],
+    mainPosts: [],
     imagePath:[],
 
     hasNextPosts: true,
@@ -62,9 +25,21 @@ export const initialState = {
     likePostFinish: false,
     likePostError: null,
 
+    uploadImagesLoading: false,
+    uploadImagesFinish: false,
+    uploadImagesError: null,
+
+    removeImagesLoading: false,
+    removeImagesFinish: false,
+    removeImagesError: null,
+
     unlikePostLoading: false,
     unlikePostFinish: false,
     unlikePostError: null,
+
+    retweetPostLoading: false,
+    retweetPostFinish: false,
+    retweetPostError: null,
 
     commentAdding: false,
     commentAdded: false,
@@ -147,7 +122,7 @@ const reducer = (state = initialState, action) => produce(state, (draft)=>{
             draft.postLoading= false;
             draft.postLoaded= true;
             draft.mainPosts = draft.mainPosts.concat(action.data);
-            draft.hasNextPosts = draft.mainPosts.length < 50;
+            draft.hasNextPosts = action.data.length === 5;
             break
         case LOAD_POSTS_FAILURE:
             draft.postLoading= false;
@@ -167,6 +142,48 @@ const reducer = (state = initialState, action) => produce(state, (draft)=>{
         case LIKE_POST_FAILURE:
             draft.likePostError= action.error;
             draft.likePostLoading= false;
+            break;
+        case RETWEET_POST_REQUEST:
+            draft.retweetPostLoading= true;
+            draft.retweetPostFinish= false;
+            draft.retweetPostError= null;
+            break;
+        case RETWEET_POST_SUCCESS:{
+            draft.retweetPostLoading= false;
+            draft.retweetPostFinish= true;
+            draft.mainPosts.unshift(action.data);
+            break}
+        case RETWEET_POST_FAILURE:
+            draft.retweetPostError= action.error;
+            draft.retweetPostLoading= false;
+            break;
+        case UPLOAD_IMAGES_REQUEST:
+            draft.uploadImagesLoading= true;
+            draft.uploadImagesFinish= false;
+            draft.uploadImagesError= null;
+            break;
+        case UPLOAD_IMAGES_SUCCESS:{
+            draft.imagePath= action.data;
+            draft.uploadImagesLoading= false;
+            draft.uploadImagesFinish= true;
+            break}
+        case UPLOAD_IMAGES_FAILURE:
+            draft.uploadImagesError= action.error;
+            draft.uploadImagesLoading= false;
+            break;
+        case REMOVE_IMAGES_REQUEST:
+            draft.removeImagesLoading= true;
+            draft.removeImagesFinish= false;
+            draft.removeImagesError= null;
+            break;
+        case REMOVE_IMAGES_SUCCESS:{
+            draft.imagePath= draft.imagePath.filter((item,index)=> index !== action.data);
+            draft.removeImagesLoading= false;
+            draft.removeImagesFinish= true;
+            break}
+        case REMOVE_POST_FAILURE:
+            draft.removeImagesError= action.error;
+            draft.removeImagesLoading= false;
             break;
         case UNLIKE_POST_REQUEST:
             draft.unlikePostLoading= true;
@@ -192,6 +209,7 @@ const reducer = (state = initialState, action) => produce(state, (draft)=>{
             draft.mainPosts.unshift(action.data);
             draft.postAdding= false;
             draft.postAdded= true;
+            draft.imagePath = [];
             break
         case ADD_POST_FAILURE:
             draft.postAdding= false;

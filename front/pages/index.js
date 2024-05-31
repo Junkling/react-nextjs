@@ -11,8 +11,13 @@ const Home = () => {
     const dispatch = useDispatch();
     
     const { user } = useSelector((state)=> state.user)
-    const { mainPosts , hasNextPosts } = useSelector((state)=> state.post)
+    const { mainPosts , hasNextPosts, retweetPostError, postLoading } = useSelector((state)=> state.post)
 
+    useEffect(()=> {
+        if(retweetPostError){
+            alert(retweetPostError);
+        }
+    },[retweetPostError])
     // 로그인 상태 복구용
     useEffect(() => {
         dispatch({
@@ -28,11 +33,13 @@ const Home = () => {
     },[]);
     useEffect(()=>{
         function onScroll(){
-            console.log(window.scrollY, document.documentElement.clientHeight, document.documentElement.scrollHeight);
+            // console.log(window.scrollY, document.documentElement.clientHeight, document.documentElement.scrollHeight);
             if(window.scrollY + document.documentElement.clientHeight >= document.documentElement.scrollHeight){
-                if(hasNextPosts){
+                if(hasNextPosts && !postLoading){
+                    const lastId = mainPosts[mainPosts.length-1]?.id;
                     dispatch({
                         type: LOAD_POSTS_REQUEST,
+                        lastId,
                     })
                 }
             }
@@ -41,7 +48,7 @@ const Home = () => {
         return () => {
             window.removeEventListener('scroll', onScroll);
         }
-    }, [hasNextPosts])
+    }, [hasNextPosts,postLoading,mainPosts])
     return (
         <>
         <Head>

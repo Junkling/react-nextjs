@@ -21,7 +21,7 @@ router.post('/', async (req, res, next) => {
             password: encodedPassword,
             nickname: req.body.nickname,
         });
-        res.setHeader('Access-Control-Allow-Origin', '*')
+        // res.setHeader('Access-Control-Allow-Origin', '*')
         res.status(201).send('ok');
     }catch(error){
         console.error(error);
@@ -72,7 +72,7 @@ router.post('/login', isNotLoggedIn , (req, res, next) => {
 });
 
 router.post('/logout', isLoggedIn, (req, res) => {
-    req.logout(()=>{});
+    // req.logout(()=>{res.redirect('/')});
     req.session.destroy();
     res.send('ok');
 });
@@ -99,7 +99,7 @@ router.patch('/follow/:userId', isLoggedIn, async (req, res, next) => {
         if(!findUser){
             return res.status(400).send('존재하지 않는 회원입니다.');
         }
-        await findUser.addFollowers(req.user.id);
+        await findUser.addFollowes(req.user.id);
         // const me = await User.findOne({
         //     where:{id: req.user.userId},
         //     attributes: {
@@ -121,6 +121,9 @@ router.delete('/follow/:userId', isLoggedIn, async (req, res, next) => {
     try{
         const findUser = await User.findOne({where:{id: req.params.userId}});
         await findUser.removeFollowers(req.user.id);
+        if(!findUser){
+            return res.status(400).send('존재하지 않는 회원입니다.');
+        }
         // const me = await User.findOne({
         //     where:{id: req.user.userId},
         //     attributes: {
