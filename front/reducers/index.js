@@ -21,24 +21,38 @@ export const changeNickname= (data) => {
 }
 
 // (이전상태 , 액션) -> 다음 상태로 만듬
-const rootReducer = combineReducers({
-    index: (state = {} , action) => {
-        switch(action.type){
-            case HYDRATE:
-                console.log('HYDRATE', action);
-                return {...state, ...action.payload };
-            case 'CHANGE_NICKNAME':
-                return{
-                    ...state,
-                    name: action.data,
+// const rootReducer = combineReducers({
+//     index: (state = {} , action) => {
+//         switch(action.type){
+//             case HYDRATE:
+//                 console.log('HYDRATE', action);
+//                 return {...state, ...action.payload };
+//             case 'CHANGE_NICKNAME':
+//                 return{
+//                     ...state,
+//                     name: action.data,
 
-                };
-            default :
-                return state;
+//                 };
+//             default :
+//                 return state;
+//         }
+//     },
+//     user,
+//     post,
+// });
+const rootReducer = (state, action) => {
+    switch(action.type){
+        case HYDRATE:
+            console.log('HYDRATE', action);
+            return {...state, ...action.payload };
+        default: {
+            const combineReducer = combineReducers({
+                user,
+                post,
+            });
+            return combineReducer(state, action)
         }
-    },
-    user,
-    post,
-});
+    }
+};
 
 export default rootReducer;

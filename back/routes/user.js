@@ -167,6 +167,7 @@ router.get('/followers', isLoggedIn, async(req, res, next)=> {
 })
 
 router.get('/', async (req, res, next) => {
+    console.log(req.headers);
     try{
         if(req.user){
             const userResponse = await User.findOne({
