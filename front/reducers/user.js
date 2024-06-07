@@ -16,6 +16,9 @@ import {
     LOAD_FOLLOWINGS_FAILURE, 
     LOAD_FOLLOWINGS_REQUEST, 
     LOAD_FOLLOWINGS_SUCCESS, 
+    LOAD_USER_FAILURE, 
+    LOAD_USER_REQUEST, 
+    LOAD_USER_SUCCESS, 
     LOG_IN_FAILURE, 
     LOG_IN_REQUEST, 
     LOG_IN_SUCCESS, 
@@ -50,6 +53,10 @@ export const initialState = {
     isGettingInfo: false,
     isGotInfo: false,
     getInfoError: null,
+    
+    isLoadingUser: false,
+    isLoadUserFinish: false,
+    loadUserError: null,
 
     followLoading: false,
     followFinish: false,
@@ -72,6 +79,7 @@ export const initialState = {
     changeNicknameError :null,
 
     user: null,
+    userInfo: null,
     signUpData:{},
     loginData:{},
 }
@@ -262,6 +270,21 @@ const reducer = (state = initialState, action)=>{
                 draft.isGettingInfo= false;
                 draft.isGotInfo= false;
                 draft.logoutError= action.error;
+                break;
+            case LOAD_USER_REQUEST:
+                draft.isLoadingUser= true;
+                draft.isLoadUserFinish= false;
+                draft.loadUserError= null;
+                break;
+            case LOAD_USER_SUCCESS:
+                draft.isLoadingUser= false;
+                draft.isLoadUserFinish= true;
+                draft.userInfo= action.data;
+                break;
+            case LOAD_USER_FAILURE:
+                draft.isLoadingUser= false;
+                draft.isLoadUserFinish= false;
+                draft.loadUserError= action.error;
                 break;
             case SIGN_UP_REQUEST:
                 draft.isSigningUp= true;

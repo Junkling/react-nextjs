@@ -198,5 +198,41 @@ router.get('/', async (req, res, next) => {
         next(err);
     }
 });
+router.get('/:userId', async (req, res, next) => {
+    console.log(req.headers);
+    try{
+        const userResponse = await User.findOne({
+            where:{ id: req.params.userId },
+            attributes: {
+                exclude: ['password']
+            },
+            include: [{
+                model: Post,
+                as: 'Posts',
+                attributes: ['id'],
+            },{
+                model: User,
+                as: 'Followings',
+                attributes: ['id'],
+            },{
+                model: User,
+                as: 'Followers',
+                attributes: ['id'],
+            }]
+        });
+        if(userResponse){
+            const data = userResponse.toJSON();
+            data.Posts = userResponse.Posts.length;
+            data.Followings = userResponse.Followings.length;
+            data.Followers = userResponse.Followers.length;
+            return res.status(200).json(data);
+        }else{
+            return res.status(404).send('존재하지 않는 사용자입니다.')
+        }
+    }catch(err){
+        console.error(err);
+        next(err);
+    }
+});
 
 module.exports = router;

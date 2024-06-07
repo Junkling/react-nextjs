@@ -1,16 +1,21 @@
 import React, { useCallback , useEffect, useState} from 'react';
-import AppLayout from '../components/AppLayout';
-import Head from 'next/head'
-import styled from 'styled-components';
 import {Form ,Input, Checkbox, Button} from 'antd';
-import useInput from '../hooks/useInput';
-import { SIGN_UP_REQUEST } from '../reducers/action';
 import { useDispatch, useSelector } from 'react-redux';
+import Head from 'next/head'
 import Router from 'next/router';
+import axios from 'axios';
+import {END} from 'redux-saga';
 
-const ErrorMessage = styled.div`
-    color:red;
-`;
+import { GET_MY_INFO_REQUEST, SIGN_UP_REQUEST } from '../reducers/action';
+import useInput from '../hooks/useInput';
+import AppLayout from '../components/AppLayout';
+import wrapper from '../store/configureStore';
+// import styled from 'styled-components';
+
+
+// const ErrorMessage = styled.div`
+//     color:red;
+// `;
 
 const signup = () => {
     const dispatch = useDispatch();
@@ -23,7 +28,7 @@ const signup = () => {
     },[user&&user.id]);
 
     useEffect(()=> {
-        if(isSignedUp){Router.push("/")}
+        if(isSignedUp){Router.replace("/")}
     },[isSignedUp]);
 
     useEffect(()=> {
@@ -60,7 +65,7 @@ const signup = () => {
             type: SIGN_UP_REQUEST,
             data: { email, password, nickname },
         })
-    },[email,password, passwordCheck, term]);
+    },[email,password, passwordCheck, term, nickname]);
     return (
         <AppLayout>
         <Head>
@@ -100,4 +105,14 @@ const signup = () => {
     );
 };
 
-export default signup;
+// export const getServerSideProps = wrapper.getServerSideProps(async (context) => {
+//     const cookie = context.req ? context.req.headers.cookie : '';
+//     axios.defaults.headers.Cookie = (context.req && cookie) ? cookie: '';
+//     context.store.dispatch({
+//         type: GET_MY_INFO_REQUEST,
+//     });
+//     context.store.dispatch(END);
+//     await context.store.sagaTask.toPromise()
+// });
+
+export default Signup;

@@ -13,12 +13,12 @@ import post from './post';
 // }
 
 
-export const changeNickname= (data) => {
-    return{
-        type: 'CHANGE_NICKNAME',
-        data,
-    }
-}
+// export const changeNickname= (data) => {
+//     return{
+//         type: 'CHANGE_NICKNAME',
+//         data,
+//     }
+// }
 
 // (이전상태 , 액션) -> 다음 상태로 만듬
 // const rootReducer = combineReducers({
@@ -44,7 +44,8 @@ const rootReducer = (state, action) => {
     switch(action.type){
         case HYDRATE:
             console.log('HYDRATE', action);
-            return {...state, ...action.payload };
+            // return {...state, ...action.payload };
+            return action.payload;
         default: {
             const combineReducer = combineReducers({
                 user,

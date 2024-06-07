@@ -1,12 +1,15 @@
 import React, { useEffect } from 'react';
 import Head from 'next/head'
 import { useDispatch, useSelector } from 'react-redux';
-import Router from 'next/router'
-
+import Router from 'next/router';
 import AppLayout from '../components/AppLayout';
 import FollowList from '../components/FollowList';
 import NicknameEditForm from '../components/NicknameEditForm';
-import { LOAD_FOLLOWERS_REQUEST, LOAD_FOLLOWINGS_REQUEST } from '../reducers/action';
+import axios from 'axios';
+import { GET_MY_INFO_REQUEST, LOAD_FOLLOWERS_REQUEST, LOAD_FOLLOWINGS_REQUEST } from '../reducers/action';
+import {END} from 'redux-saga';
+import wrapper from '../store/configureStore';
+
 
 const profile = () => {
     const dispatch = useDispatch();
@@ -41,5 +44,15 @@ const profile = () => {
         </>
     );
 };
+
+export const getServerSideProps = wrapper.getServerSideProps(async (context) => {
+    const cookie = context.req ? context.req.headers.cookie : '';
+    axios.defaults.headers.Cookie = (context.req && cookie) ? cookie: '';
+    context.store.dispatch({
+        type: GET_MY_INFO_REQUEST,
+    });
+    context.store.dispatch(END);
+    await context.store.sagaTask.toPromise()
+});
 
 export default profile;

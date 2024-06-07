@@ -15,6 +15,9 @@ import {
     LOAD_FOLLOWERS_SUCCESS, 
     LOAD_FOLLOWINGS_REQUEST, 
     LOAD_FOLLOWINGS_SUCCESS, 
+    LOAD_USER_FAILURE, 
+    LOAD_USER_REQUEST, 
+    LOAD_USER_SUCCESS, 
     LOG_IN_FAILURE, 
     LOG_IN_REQUEST, 
     LOG_IN_SUCCESS, 
@@ -228,6 +231,28 @@ function* getInfo(action) {
         )
     }
 }
+function getUserInfoByPkApi(data){
+    return axios.get(`/user/${data}`)
+}
+function* getUserInfoByPk(action) {
+    try {
+    // 그래서 여긴 call 호출
+    const result = yield call(getUserInfoByPkApi, action.data)
+    // yield delay(500);
+    yield put ({
+        type: LOAD_USER_SUCCESS,
+        // data: action.data,
+        data: result.data
+    })
+    }
+    catch (err){
+        yield put({
+            type: LOAD_USER_FAILURE,
+            error: err.response.data
+            }
+        )
+    }
+}
 function* watchLoadFollowings(){
     yield takeLatest(LOAD_FOLLOWINGS_REQUEST, loadFollowings);
 }
@@ -255,6 +280,9 @@ function* watchSignUp(){
 function* watchGetUserInfo(){
     yield takeLatest(GET_MY_INFO_REQUEST, getInfo);
 }
+function* watchLoadUserByPk(){
+    yield takeLatest(LOAD_USER_REQUEST, getUserInfoByPk);
+}
 
 export default function* userSaga() {
     yield all([
@@ -267,5 +295,6 @@ export default function* userSaga() {
         fork(watchLogout),
         fork(watchSignUp),
         fork(watchGetUserInfo),
+        fork(watchLoadUserByPk),
     ])
 }

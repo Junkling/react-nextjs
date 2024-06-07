@@ -11,9 +11,15 @@ export const SIGN_UP_REQUEST = 'SIGN_UP_REQUEST';
 export const SIGN_UP_SUCCESS = 'SIGN_UP_SUCCESS';
 export const SIGN_UP_FAILURE = 'SIGN_UP_FAILURE';
 
+//내 정보 가져오기
 export const GET_MY_INFO_REQUEST = 'GET_MY_INFO_REQUEST';
 export const GET_MY_INFO_SUCCESS = 'GET_MY_INFO_SUCCESS';
 export const GET_MY_INFO_FAILURE = 'GET_MY_INFO_FAILURE';
+
+//유저 정보 가져오기
+export const LOAD_USER_REQUEST = 'LOAD_USER_REQUEST';
+export const LOAD_USER_SUCCESS = 'LOAD_USER_SUCCESS';
+export const LOAD_USER_FAILURE = 'LOAD_USER_FAILURE';
 
 
 export const FOLLOW_REQUEST = 'FOLLOW_REQUEST';

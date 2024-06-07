@@ -36,6 +36,7 @@ const FollowList = ({header, data}) => {
 FollowList.protoTypes = {
     header: PropTypes.string.isRequired,
     data: PropTypes.array.isRequired,
+    
 };
 
 export default FollowList;

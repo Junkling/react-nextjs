@@ -65,6 +65,7 @@ const Home = () => {
     );
 }
 
+//페이지가 랜더링 되기 전에 SSR로 state를 초기화 한다.
 export const getServerSideProps = wrapper.getServerSideProps(async (context) => {
     const cookie = context.req ? context.req.headers.cookie : '';
     axios.defaults.headers.Cookie = (context.req && cookie) ? cookie: '';
