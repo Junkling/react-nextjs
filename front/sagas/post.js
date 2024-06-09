@@ -1,6 +1,6 @@
 import { all, fork, takeLatest, put, delay , call} from 'redux-saga/effects';
 import axios from 'axios';
-import { ADD_COMMENT_FAILURE, ADD_COMMENT_REQUEST, ADD_COMMENT_SUCCESS, ADD_POST_FAILURE, ADD_POST_REQUEST, ADD_POST_SUCCESS, ADD_POST_TO_ME, LIKE_POST_FAILURE, LIKE_POST_REQUEST, LIKE_POST_SUCCESS, LOAD_POSTS_FAILURE, LOAD_POSTS_REQUEST, LOAD_POSTS_SUCCESS, REMOVE_IMAGES_FAILURE, REMOVE_IMAGES_REQUEST, REMOVE_IMAGES_SUCCESS, REMOVE_POST_FAILURE, REMOVE_POST_OF_ME, REMOVE_POST_REQUEST, REMOVE_POST_SUCCESS, RETWEET_POST_FAILURE, RETWEET_POST_REQUEST, RETWEET_POST_SUCCESS, UNLIKE_POST_FAILURE, UNLIKE_POST_REQUEST, UNLIKE_POST_SUCCESS, UPLOAD_IMAGES_FAILURE, UPLOAD_IMAGES_REQUEST, UPLOAD_IMAGES_SUCCESS } from '../reducers/action';
+import { ADD_COMMENT_FAILURE, ADD_COMMENT_REQUEST, ADD_COMMENT_SUCCESS, ADD_POST_FAILURE, ADD_POST_REQUEST, ADD_POST_SUCCESS, ADD_POST_TO_ME, LIKE_POST_FAILURE, LIKE_POST_REQUEST, LIKE_POST_SUCCESS, LOAD_POSTS_BY_HASHTAG_FAILURE, LOAD_POSTS_BY_HASHTAG_REQUEST, LOAD_POSTS_BY_HASHTAG_SUCCESS, LOAD_POSTS_BY_USER_FAILURE, LOAD_POSTS_BY_USER_REQUEST, LOAD_POSTS_BY_USER_SUCCESS, LOAD_POSTS_FAILURE, LOAD_POSTS_REQUEST, LOAD_POSTS_SUCCESS, LOAD_POST_FAILURE, LOAD_POST_REQUEST, LOAD_POST_SUCCESS, REMOVE_IMAGES_FAILURE, REMOVE_IMAGES_REQUEST, REMOVE_IMAGES_SUCCESS, REMOVE_POST_FAILURE, REMOVE_POST_OF_ME, REMOVE_POST_REQUEST, REMOVE_POST_SUCCESS, RETWEET_POST_FAILURE, RETWEET_POST_REQUEST, RETWEET_POST_SUCCESS, UNLIKE_POST_FAILURE, UNLIKE_POST_REQUEST, UNLIKE_POST_SUCCESS, UPLOAD_IMAGES_FAILURE, UPLOAD_IMAGES_REQUEST, UPLOAD_IMAGES_SUCCESS } from '../reducers/action';
 // import shortId from 'shortid';
 // import { generageDummyPost } from '../reducers/post';
 
@@ -22,6 +22,75 @@ function* loadPosts(action) {
         console.log(err)
         yield put({
             type: LOAD_POSTS_FAILURE,
+            error: err.response.data
+            }
+        )
+    }
+}
+function loadPostsByHashtagApi(data,lastId){
+    return axios.get(`/posts/hashtag/${encodeURIComponent(data)}?lastId=${lastId || 0}`)
+}
+function* loadPostsByHashtag(action) {
+    try {
+    // 그래서 여긴 call 호출
+    const result = yield call(loadPostsByHashtagApi, action.data,action.lastId)
+    // yield delay(500);
+    console.log("LOAD_POSTS_SUCCESS 실행");
+    yield put ({
+        type: LOAD_POSTS_BY_HASHTAG_SUCCESS,
+        // data: generageDummyPost(10),
+        data: result.data
+    });
+    } catch (err){
+        console.log(err)
+        yield put({
+            type: LOAD_POSTS_BY_HASHTAG_FAILURE,
+            error: err.response.data
+            }
+        )
+    }
+}
+function loadPostsByUserApi(data,lastId){
+    return axios.get(`/posts/user/${data}?lastId=${lastId || 0}`)
+}
+function* loadPostsByUser(action) {
+    try {
+    // 그래서 여긴 call 호출
+    const result = yield call(loadPostsByUserApi, action.data,action.lastId)
+    // yield delay(500);
+    console.log("LOAD_POSTS_SUCCESS 실행");
+    yield put ({
+        type: LOAD_POSTS_BY_USER_SUCCESS,
+        // data: generageDummyPost(10),
+        data: result.data
+    });
+    } catch (err){
+        console.log(err)
+        yield put({
+            type: LOAD_POSTS_BY_USER_FAILURE,
+            error: err.response.data
+            }
+        )
+    }
+}
+function loadPostApi(postId){
+    return axios.get(`/post/${postId}`)
+}
+function* loadPost(action) {
+    try {
+    // 그래서 여긴 call 호출
+    const result = yield call(loadPostApi, action.data)
+    // yield delay(500);
+    console.log("LOAD_POSTS_SUCCESS 실행");
+    yield put ({
+        type: LOAD_POST_SUCCESS,
+        // data: generageDummyPost(10),
+        data: result.data
+    });
+    } catch (err){
+        console.log(err)
+        yield put({
+            type: LOAD_POST_FAILURE,
             error: err.response.data
             }
         )
@@ -230,6 +299,15 @@ function* watchRemoveImage(){
 function* watchLoadPosts(){
     yield takeLatest(LOAD_POSTS_REQUEST, loadPosts);
 }
+function* watchLoadPostsByUser(){
+    yield takeLatest(LOAD_POSTS_BY_USER_REQUEST, loadPostsByUser);
+}
+function* watchLoadPostsByHashTag(){
+    yield takeLatest(LOAD_POSTS_BY_HASHTAG_REQUEST, loadPostsByHashtag);
+}
+function* watchLoadPost(){
+    yield takeLatest(LOAD_POST_REQUEST, loadPost);
+}
 function* watchLikePosts(){
     yield takeLatest(LIKE_POST_REQUEST, likePost);
 }
@@ -254,6 +332,9 @@ export default function* postSaga() {
         fork(watchUploadImages),
         fork(watchRemoveImage),
         fork(watchLoadPosts),
+        fork(watchLoadPost),
+        fork(watchLoadPostsByUser),
+        fork(watchLoadPostsByHashTag),
         fork(watchLikePosts),
         fork(watchUnlikePosts),
         fork(watchAddPost),

@@ -115,4 +115,4 @@ const signup = () => {
 //     await context.store.sagaTask.toPromise()
 // });
 
-export default Signup;
+export default signup;

@@ -1,4 +1,4 @@
-import { ADD_COMMENT_FAILURE, ADD_COMMENT_REQUEST, ADD_COMMENT_SUCCESS, ADD_POST_FAILURE, ADD_POST_REQUEST, ADD_POST_SUCCESS, LIKE_POST_FAILURE, LIKE_POST_REQUEST, LIKE_POST_SUCCESS, LOAD_POSTS_FAILURE, LOAD_POSTS_REQUEST, LOAD_POSTS_SUCCESS, REMOVE_IMAGES_REQUEST, REMOVE_IMAGES_SUCCESS, REMOVE_POST_FAILURE, REMOVE_POST_REQUEST, REMOVE_POST_SUCCESS, RETWEET_POST_FAILURE, RETWEET_POST_REQUEST, RETWEET_POST_SUCCESS, UNLIKE_POST_FAILURE, UNLIKE_POST_REQUEST, UNLIKE_POST_SUCCESS, UPLOAD_IMAGES_FAILURE, UPLOAD_IMAGES_REQUEST, UPLOAD_IMAGES_SUCCESS } from "./action";
+import { ADD_COMMENT_FAILURE, ADD_COMMENT_REQUEST, ADD_COMMENT_SUCCESS, ADD_POST_FAILURE, ADD_POST_REQUEST, ADD_POST_SUCCESS, LIKE_POST_FAILURE, LIKE_POST_REQUEST, LIKE_POST_SUCCESS, LOAD_POSTS_BY_HASHTAG_FAILURE, LOAD_POSTS_BY_HASHTAG_REQUEST, LOAD_POSTS_BY_HASHTAG_SUCCESS, LOAD_POSTS_BY_USER_FAILURE, LOAD_POSTS_BY_USER_REQUEST, LOAD_POSTS_BY_USER_SUCCESS, LOAD_POSTS_FAILURE, LOAD_POSTS_REQUEST, LOAD_POSTS_SUCCESS, LOAD_POST_FAILURE, LOAD_POST_REQUEST, LOAD_POST_SUCCESS, REMOVE_IMAGES_REQUEST, REMOVE_IMAGES_SUCCESS, REMOVE_POST_FAILURE, REMOVE_POST_REQUEST, REMOVE_POST_SUCCESS, RETWEET_POST_FAILURE, RETWEET_POST_REQUEST, RETWEET_POST_SUCCESS, UNLIKE_POST_FAILURE, UNLIKE_POST_REQUEST, UNLIKE_POST_SUCCESS, UPLOAD_IMAGES_FAILURE, UPLOAD_IMAGES_REQUEST, UPLOAD_IMAGES_SUCCESS } from "./action";
 import shortId from "shortid";
 import produce from 'immer';
 // import faker from "faker";
@@ -6,12 +6,17 @@ import produce from 'immer';
 export const initialState = {
     mainPosts: [],
     imagePath:[],
+    singlePost: null,
 
     hasNextPosts: true,
 
     postLoading: false,
     postLoaded: false,
     postLoadError: null,
+
+    singlePostLoading: false,
+    singlePostLoaded: false,
+    singlePostLoadError: null,
 
     postAdding: false,
     postAdded: false,
@@ -113,11 +118,15 @@ export const addComment =(data) => {
 const reducer = (state = initialState, action) => produce(state, (draft)=>{
     switch (action.type){
         case LOAD_POSTS_REQUEST:
+        case LOAD_POSTS_BY_USER_REQUEST:
+        case LOAD_POSTS_BY_HASHTAG_REQUEST:
             draft.postLoading= true;
             draft.postLoaded= false;
             draft.postLoadError= null;
             break;
         case LOAD_POSTS_SUCCESS:
+        case LOAD_POSTS_BY_HASHTAG_SUCCESS:
+        case LOAD_POSTS_BY_USER_SUCCESS:
             // draft.mainPosts.unshift(action.data);
             draft.postLoading= false;
             draft.postLoaded= true;
@@ -125,8 +134,25 @@ const reducer = (state = initialState, action) => produce(state, (draft)=>{
             draft.hasNextPosts = action.data.length === 5;
             break
         case LOAD_POSTS_FAILURE:
+        case LOAD_POSTS_BY_HASHTAG_FAILURE:
+        case LOAD_POSTS_BY_USER_FAILURE:
             draft.postLoading= false;
             draft.postLoadError= action.error;
+            break;
+        case LOAD_POST_REQUEST:
+            draft.singlePostLoading= true;
+            draft.singlePostLoaded= false;
+            draft.singlePostLoadError= null;
+            break;
+        case LOAD_POST_SUCCESS:
+            // draft.mainPosts.unshift(action.data);
+            draft.singlePostLoading= false;
+            draft.singlePostLoaded= true;
+            draft.singlePost = action.data;
+            break
+        case LOAD_POST_FAILURE:
+            draft.singlePostLoading= false;
+            draft.singlePostLoadError= action.error;
             break;
         case LIKE_POST_REQUEST:
             draft.likePostLoading= true;
