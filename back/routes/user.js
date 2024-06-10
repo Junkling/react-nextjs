@@ -145,7 +145,8 @@ router.get('/followings', isLoggedIn, async(req, res, next)=> {
     try{
         const findUser = await User.findOne({where:{id: req.user.id}});
         const myFollowings = await findUser.getFollowings({
-            attributes:['id','nickname']
+            attributes:['id','nickname'],
+            limit: parseInt(req.query.limit, 10),
         });
         res.status(200).json(myFollowings);
     }catch(err){
@@ -157,7 +158,8 @@ router.get('/followers', isLoggedIn, async(req, res, next)=> {
     try{
         const findUser = await User.findOne({where:{id: req.user.id}});
         const myFollowers = await findUser.getFollowers({
-            attributes:['id','nickname']
+            attributes:['id','nickname'],
+            limit: parseInt(req.query.limit, 10),
         });
         res.status(200).json(myFollowers);
     }catch(err){
